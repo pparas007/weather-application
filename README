@@ -1,0 +1,85 @@
+# weather-application
+
+This is a SpringBoot application. Just run DemoApplication.java to start the app on the tomcat server, and you can start sending the REST requests.
+Derby database is used on the backend. It's a runtime db, so data is lost after the app stops each time.
+---------------------------------------------------------------------------------------------------------------|
+
+Following REST endpoints are available:
+1.
+To register a new Sensor.
+TYPE: POST
+URL: http://localhost:8080/sensors, 
+CONTENT-TYPE: application/json,
+BODY:
+{
+	"sensorId":"1",
+	"countryName":"Ireland",
+	"cityName":"Dublin"
+}
+
+2.
+To record metric information for a Sensor.
+TYPE: POST
+URL: http://localhost:8080/sensors/1/metrics, 
+CONTENT-TYPE: application/json,
+BODY:
+{
+"temperature":"50",
+"humidity":"97"
+}
+
+3.
+To fetch information about all the sensors, including metadata about the sensors and metrics recorded yet.
+TYPE: GET
+URL: http://localhost:8080/sensors, 
+CONTENT-TYPE: application/json,
+
+4.
+To fetch information about a particular sensor, including metadata about the sensor and metrics recorded yet.
+TYPE: GET
+URL: http://localhost:8080/sensors/2, 
+CONTENT-TYPE: application/json,
+
+5.
+To query sensor data. 
+averageHumidity and averageTemperature will be included in the response.
+
+Include sensorIds in sensorIdList, for the sensors you wish to know metrics statistics.
+If no sensorIds are included, statistics will be calculated for all the sensors registered.
+
+Include metrics name in metricsList, for the metrics you wish to know statistics about. If invalid name is included in this list, it will be ignored.
+
+dateFrom, dateTo is the date range for which you wish to know the statistics. If now date is included then statistics will be calculated for all the metrics data recorded.
+
+TYPE: POST
+URL: http://localhost:8080/sensors/metrics-statistics
+CONTENT-TYPE: application/json,
+BODY:
+{
+	"sensorIdList": [1,2],
+	"metricsList": ["temperature","humidity"],
+	"dateFrom": "2022-04-08",
+	"dateTo": "2022-04-09"
+}
+---------------------------------------------------------------------------------------------------------------|
+
+Input Validation and error handling:
+Basic validations have been added just to show the PoC. All the validations can be added to the app going forward.
+E.g.
+"No sensor is registered under this id. Please use a valid id."
+"The sensorId is already registered. Please use a different one."
+---------------------------------------------------------------------------------------------------------------|
+Testing:
+Basic test cases are added for the web layer using JUnit and MockMvc.
+---------------------------------------------------------------------------------------------------------------|
+Enhancements that can be done:
+- Proper and specific status codes can be returned. E.g. 201 can be returned when a sensor is registered, instead of returning 200.
+- More and proper comments can be added to the code.
+- Properties file can be used to read error messages, instead of hardcoding them.
+- Currently while getting metrics statistics, if an invalid sensorId is passed in the list along with other valid           	sensorIds, error response is returned. This can be improved upon so that the service still returns response 	for the valid sensorIds and invalid ones are just skipped.
+- XML support can be provided, along with existing JSON.
+- Endpoints can be secured (e.g. Basic Authentication) using Spring Security features.
+- Logs can be added for fault finding in production grade app.
+- Responses can be improved using HATEOAS principle.
+- Code coverage in testing can be improved.
+
